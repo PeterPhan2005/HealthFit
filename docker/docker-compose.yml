@@ -1,28 +1,98 @@
 version: '3.8'
 
 services:
-  postgres:
+  # Auth Service Database
+  auth-db:
     image: postgres:15-alpine
-    container_name: healthfit-postgres
+    container_name: healthfit-auth-db
     environment:
-      POSTGRES_DB: healthfit_db
-      POSTGRES_USER: healthfit_user
-      POSTGRES_PASSWORD: healthfit_pass
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - auth_data:/var/lib/postgresql/data
     networks:
       - healthfit-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U healthfit_user -d healthfit_db"]
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # User Service Database
+  user-db:
+    image: postgres:15-alpine
+    container_name: healthfit-user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: user_pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5434:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    networks:
+      - healthfit-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_user -d user_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Fitness Service Database
+  fitness-db:
+    image: postgres:15-alpine
+    container_name: healthfit-fitness-db
+    environment:
+      POSTGRES_DB: fitness_db
+      POSTGRES_USER: fitness_user
+      POSTGRES_PASSWORD: fitness_pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5435:5432"
+    volumes:
+      - fitness_data:/var/lib/postgresql/data
+    networks:
+      - healthfit-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitness_user -d fitness_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Meal Service Database
+  meal-db:
+    image: postgres:15-alpine
+    container_name: healthfit-meal-db
+    environment:
+      POSTGRES_DB: meal_db
+      POSTGRES_USER: meal_user
+      POSTGRES_PASSWORD: meal_pass
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5436:5432"
+    volumes:
+      - meal_data:/var/lib/postgresql/data
+    networks:
+      - healthfit-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meal_user -d meal_db"]
       interval: 10s
       timeout: 5s
       retries: 5
 
 volumes:
-  postgres_data:
+  auth_data:
+    driver: local
+  user_data:
+    driver: local
+  fitness_data:
+    driver: local
+  meal_data:
     driver: local
 
 networks:
