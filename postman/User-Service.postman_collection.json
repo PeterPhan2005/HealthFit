@@ -1,0 +1,589 @@
+{
+	"info": {
+		"_postman_id": "user-service-api",
+		"name": "User Service API",
+		"description": "User profile management, health metrics tracking, and goals management for HealthFit",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get Current User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Get profile for authenticated user (from JWT token)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						},
+						"description": "Get user profile by user ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Current User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"John Doe Updated\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"1995-05-15\",\n  \"currentWeight\": 75.5,\n  \"currentHeight\": 175.0,\n  \"activityLevel\": \"MODERATELY_ACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Update profile for authenticated user. BMI auto-calculated."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health Metrics",
+			"item": [
+				{
+					"name": "Log Health Metric",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recordedDate\": \"2024-11-12\",\n  \"weight\": 75.5,\n  \"height\": 175.0,\n  \"bodyFatPercentage\": 18.5,\n  \"muscleMass\": 32.5,\n  \"waistCircumference\": 82.0,\n  \"chestCircumference\": 95.0,\n  \"hipCircumference\": 92.0,\n  \"notes\": \"After morning workout\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1/metrics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics"
+							]
+						},
+						"description": "Log a new health metric. BMI auto-calculated. If recordedDate not provided, today's date is used."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Metrics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/metrics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics"
+							]
+						},
+						"description": "Get all metrics for a user (ordered by date descending)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Metrics By Date Range",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/metrics?startDate=2024-01-01&endDate=2024-12-31",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31"
+								}
+							]
+						},
+						"description": "Get metrics within a specific date range"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Latest Metric",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/metrics/latest",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics",
+								"latest"
+							]
+						},
+						"description": "Get the most recent metric for a user"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Metric",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/metrics/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics",
+								"1"
+							]
+						},
+						"description": "Delete a specific metric. Only metric owner can delete."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Goals Management",
+			"item": [
+				{
+					"name": "Create Goal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"goalType\": \"WEIGHT_LOSS\",\n  \"title\": \"Lose 10 kg by summer\",\n  \"description\": \"Target weight of 70kg through balanced diet and exercise\",\n  \"targetValue\": 70.0,\n  \"currentValue\": 80.0,\n  \"unit\": \"kg\",\n  \"startDate\": \"2024-11-12\",\n  \"targetDate\": \"2025-06-01\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals"
+							]
+						},
+						"description": "Create a new goal. Status auto-calculated based on progress and dates. Goal types: WEIGHT_LOSS, WEIGHT_GAIN, MUSCLE_GAIN, FITNESS_LEVEL, CALORIE_INTAKE, WORKOUT_FREQUENCY, CUSTOM"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Goals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals"
+							]
+						},
+						"description": "Get all goals for a user (ordered by creation date descending)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goals By Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals?status=IN_PROGRESS",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "IN_PROGRESS"
+								}
+							]
+						},
+						"description": "Get goals filtered by status. Status values: NOT_STARTED, IN_PROGRESS, COMPLETED, OVERDUE, CANCELLED"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goals By Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals?type=WEIGHT_LOSS",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "WEIGHT_LOSS"
+								}
+							]
+						},
+						"description": "Get goals filtered by type"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goal By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1"
+							]
+						},
+						"description": "Get a specific goal by ID. Returns 403 if goal doesn't belong to user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Goal Title\",\n  \"description\": \"Updated description\",\n  \"targetValue\": 65.0,\n  \"currentValue\": 75.0,\n  \"targetDate\": \"2025-07-01\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1"
+							]
+						},
+						"description": "Update an existing goal. Status auto-updated based on progress."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal Progress",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentValue\": 72.0\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals/1/progress",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1",
+								"progress"
+							]
+						},
+						"description": "Update only the current progress value. Status auto-updated."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Goal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals/1/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1",
+								"cancel"
+							]
+						},
+						"description": "Cancel a goal (sets status to CANCELLED)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/1/goals/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1"
+							]
+						},
+						"description": "Permanently delete a goal. Only goal owner can delete."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8082",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "your_jwt_token_here",
+			"type": "string"
+		}
+	]
+}

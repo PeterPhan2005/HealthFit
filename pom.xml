@@ -22,9 +22,9 @@
     <modules>
         <module>common</module>
         <module>auth-service</module>
+        <module>user-service</module>
         <!-- TODO: Uncomment when services are ready -->
         <!--
-        <module>user-service</module>
         <module>fitness-service</module>
         <module>meal-service</module>
         <module>api-gateway</module>
