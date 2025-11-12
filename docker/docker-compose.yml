@@ -22,6 +22,25 @@ services:
       timeout: 5s
       retries: 5
 
+  # Auth Service Application
+  auth-service:
+    build:
+      context: ..
+      dockerfile: auth-service/Dockerfile
+    container_name: healthfit-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: auth_user
+      SPRING_DATASOURCE_PASSWORD: auth_pass
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - healthfit-network
+    restart: unless-stopped
+
   # User Service Database
   user-db:
     image: postgres:15-alpine

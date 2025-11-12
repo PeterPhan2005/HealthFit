@@ -102,6 +102,38 @@
 						"description": "Get currently authenticated user's profile.\n\n**Headers:**\n- Authorization: Bearer {token}\n\n**Response:**\n- User profile details"
 					},
 					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout user by blacklisting the current JWT token.\n\n**Headers:**\n- Authorization: Bearer {token}\n\n**Response:**\n- Success message\n\n**Note:** After logout, the token will be invalidated and cannot be used again."
+					},
+					"response": []
 				}
 			]
 		},
