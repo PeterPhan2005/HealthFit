@@ -3,7 +3,6 @@ package com.healthfit.auth.controller;
 import com.healthfit.auth.dto.AuthResponse;
 import com.healthfit.auth.dto.LoginRequest;
 import com.healthfit.auth.dto.RegisterRequest;
-import com.healthfit.auth.entity.User;
 import com.healthfit.auth.service.AuthService;
 import com.healthfit.auth.service.TokenBlacklistService;
 import com.healthfit.common.dto.ApiResponse;
@@ -16,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -87,18 +84,6 @@ public class AuthController {
         }
         
         return ResponseEntity.ok(ApiResponse.success("Login successful", authResponse));
-    }
-
-    /**
-     * Get current authenticated user
-     * GET /api/auth/me
-     */
-    @GetMapping("/me")
-    public ResponseEntity<ApiResponse<User>> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
-        log.info("GET /api/auth/me - Get current user: {}", user.getEmail());
-        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     /**

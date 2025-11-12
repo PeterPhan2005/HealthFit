@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Thanh toán học phí - iBanking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --danger-gradient: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+        }
+        
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            padding: 2.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .section-title i {
+            margin-right: 0.5rem;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+        
+        .form-control:readonly {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        .btn-outline-secondary {
+            border-radius: 12px;
+            padding: 0.9rem;
+            font-weight: 600;
+            border: 2px solid #667eea;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .otp-input {
+            width: 50px;
+            height: 55px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 8px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .otp-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            transform: scale(1.05);
+        }
+        
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 1.5rem;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+        }
+        
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .badge-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-paid {
+            background: var(--success-gradient);
+            color: white;
+        }
+        
+        .badge-unpaid {
+            background: var(--danger-gradient);
+            color: white;
+        }
+        
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .alert-custom {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .input-group-icon {
+            position: relative;
+        }
+        
+        .input-group-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            z-index: 10;
+        }
+        
+        .input-group-icon input {
+            padding-left: 45px;
+        }
+        
+        .resend-btn {
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .resend-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .countdown-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #667eea;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .main-card {
+            animation: slideIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/home">
+            <i class="fas fa-university"></i> iBanking System
+        </a>
+        <div class="ms-auto d-flex align-items-center">
+            <div class="me-3">
+                <i class="fas fa-user-circle text-primary"></i>
+                <span class="ms-2 fw-semibold" id="navbarUsername">Đang tải...</span>
+            </div>
+            <a href="#" id="logoutBtn" class="btn btn-outline-danger btn-sm">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="text-center text-white mt-4 mb-2">
+        <h2 class="fw-bold"><i class="fas fa-credit-card"></i> Thanh toán học phí</h2>
+        <p class="mb-0">Hệ thống thanh toán trực tuyến an toàn và nhanh chóng</p>
+    </div>
+
+    <form id="paymentForm" class="main-card">
+
+        <!-- A. Thông tin người trả -->
+        <h5 class="section-title"><i class="fas fa-user"></i> A. Thông tin người trả</h5>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label">Họ và tên</label>
+                <input type="text" id="fullName" class="form-control" value="" readonly/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Số điện thoại</label>
+                <input type="text" id="phoneNumber" class="form-control" value="" readonly/>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Email</label>
+                <input type="text" id="emailAddress" class="form-control" value="" readonly/>
+            </div>
+        </div>
+
+        <!-- B. Thông tin học phí -->
+        <h5 class="section-title"><i class="fas fa-graduation-cap"></i> B. Thông tin học phí</h5>
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="studentId" class="form-label"><i class="fas fa-id-card"></i> Mã số sinh viên (MSSV)</label>
+                <div class="input-group-icon">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="studentId" class="form-control" placeholder="Nhập MSSV (8 ký tự)"/>
+                </div>
+                <small id="studentIdError" class="text-danger" style="display:none;"><i class="fas fa-exclamation-circle"></i> MSSV phải đúng 8 ký tự.</small>
+                <small id="studentNotFoundError" class="text-danger" style="display:none;"><i class="fas fa-times-circle"></i> MSSV không tồn tại trong hệ thống.</small>
+            </div>
+            <div class="col-md-4">
+                <label for="studentName" class="form-label"><i class="fas fa-user-graduate"></i> Họ tên sinh viên</label>
+                <input type="text" id="studentName" class="form-control" value="--" readonly/>
+            </div>
+            <div class="col-md-4">
+                <label for="semester" class="form-label"><i class="fas fa-calendar-alt"></i> Học kỳ</label>
+                <select id="semester" class="form-select" disabled>
+                    <option value="">-- Chọn học kỳ --</option>
+                </select>
+                <small id="semesterError" class="text-danger" style="display:none;">
+                    <i class="fas fa-exclamation-circle"></i> Vui lòng chọn học kỳ.
+                </small>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="tuitionAmount" class="form-label"><i class="fas fa-money-bill-wave"></i> Số tiền học phí</label>
+                <input type="text" id="tuitionAmount" class="form-control" value="--" readonly/>
+                <small id="tuitionPaidMsg" class="text-success" style="display:none;">
+                    <i class="fas fa-check-circle"></i> Học phí đã được thanh toán.
+                </small>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label"><i class="fas fa-info-circle"></i> Trạng thái</label>
+                <input type="text" id="paymentStatus" class="form-control" value="--" readonly/>
+            </div>
+        </div>
+
+        <!-- C. Thông tin thanh toán -->
+        <h5 class="section-title"><i class="fas fa-wallet"></i> C. Thông tin thanh toán</h5>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="availableBalance" class="form-label"><i class="fas fa-coins"></i> Số dư khả dụng</label>
+                <div class="input-group">
+                    <input type="text" id="availableBalance" class="form-control" value="--" readonly/>
+                    <span class="input-group-text">VNĐ</span>
+                </div>
+                <small id="balanceError" class="text-danger" style="display:none;">
+                    <i class="fas fa-exclamation-triangle"></i> Số dư không đủ.
+                </small>
+            </div>
+            <div class="col-md-6">
+                <label for="payAmount" class="form-label"><i class="fas fa-hand-holding-usd"></i> Số tiền thanh toán</label>
+                <div class="input-group">
+                    <input type="text" id="payAmount" class="form-control" value="--" readonly/>
+                    <span class="input-group-text">VNĐ</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info alert-custom d-flex align-items-center mb-3" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            <div>
+                <strong>Lưu ý:</strong> Hệ thống chỉ cho phép thanh toán toàn bộ học phí, không hỗ trợ thanh toán từng phần.
+            </div>
+        </div>
+
+        <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="terms"/>
+            <label class="form-check-label" for="terms">
+                Tôi đồng ý với <a href="#" id="termsLink" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#termsModal">các điều khoản và điều kiện</a> của hệ thống.
+            </label>
+        </div>
+
+        <!-- Actions -->
+        <button type="submit" class="btn btn-primary w-100 mb-2" id="confirmBtn" disabled>
+            <i class="fas fa-lock"></i> Xác nhận giao dịch
+        </button>
+        <button type="button" class="btn btn-outline-secondary w-100" id="viewHistoryBtn">
+            <i class="fas fa-history"></i> Xem lịch sử giao dịch
+        </button>
+    </form>
+</div>
+
+<!-- OTP Modal -->
+<div class="modal fade" id="otpModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-shield-alt"></i> Xác thực giao dịch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <div class="mb-3">
+                        <i class="fas fa-envelope-open-text" style="font-size: 3rem; color: #667eea;"></i>
+                    </div>
+                    <p class="mb-2">Vui lòng nhập mã OTP đã được gửi đến email của bạn</p>
+                    <small class="text-muted">Mã OTP có hiệu lực trong 5 phút</small>
+                </div>
+                
+                <div class="d-flex justify-content-center my-4">
+                    <input type="text" class="otp-input form-control" maxlength="1"/>
+                    <input type="text" class="otp-input form-control" maxlength="1"/>
+                    <input type="text" class="otp-input form-control" maxlength="1"/>
+                    <input type="text" class="otp-input form-control" maxlength="1"/>
+                    <input type="text" class="otp-input form-control" maxlength="1"/>
+                    <input type="text" class="otp-input form-control" maxlength="1"/>
+                </div>
+                
+                <div id="otpError" class="alert alert-danger alert-custom d-none" role="alert">
+                    <i class="fas fa-times-circle"></i> OTP không hợp lệ. Vui lòng thử lại.
+                </div>
+                
+                <button type="button" class="btn btn-link resend-btn w-100 text-decoration-none" id="resendOtpBtn">
+                    <i class="fas fa-redo-alt"></i> Gửi lại OTP
+                    <span id="countdownBadge" class="countdown-badge" style="display:none;"></span>
+                </button>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-lock"></i> Giao dịch được bảo mật bằng mã hóa SSL
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal fade" id="historyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-history"></i> Lịch sử giao dịch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> Mã GD</th>
+                                <th><i class="fas fa-clock"></i> Thời gian</th>
+                                <th><i class="fas fa-money-bill"></i> Số tiền</th>
+                                <th><i class="fas fa-file-alt"></i> Nội dung</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-file-contract"></i> Điều khoản và Điều kiện</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="termsContent" style="line-height: 1.8; font-size: 0.95rem;">
+                    <!-- Terms content will be generated by JavaScript -->
+                </div>
+                <div class="alert alert-info alert-custom mt-3">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Lưu ý:</strong> Vui lòng đọc kỹ các điều khoản trước khi đồng ý.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Đóng
+                </button>
+                <button type="button" class="btn btn-primary" id="acceptTermsBtn">
+                    <i class="fas fa-check"></i> Tôi đồng ý
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for success notification -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="successToast" class="toast align-items-center border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body bg-success text-white rounded">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="toastMessage"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;">
+    <div class="text-center">
+        <div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-white mt-3 fw-bold">Đang xử lý giao dịch...</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    "use strict";
+
+    // Wait for DOM to load before accessing elements
+    document.addEventListener('DOMContentLoaded', function() {
+
+    const confirmBtn = document.getElementById("confirmBtn");
+    const termsCheckbox = document.getElementById("terms");
+    const resendOtpBtn = document.getElementById("resendOtpBtn");
+    const countdownBadge = document.getElementById("countdownBadge");
+    
+    let paidNotified = false;
+    let paidPollInterval = null;
+    let resendCountdown = 0;
+    let resendInterval = null;
+    let balanceMonitorInterval = null;
+    let lastKnownBalance = null;
+
+    // Terms and Conditions Content Generator
+    const termsTemplates = [
+        {
+            title: "Điều khoản sử dụng dịch vụ thanh toán học phí trực tuyến",
+            content: `
+                <h6 class="text-primary mb-3"><i class="fas fa-shield-alt"></i> 1. Bảo mật thông tin</h6>
+                <p>Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn theo tiêu chuẩn bảo mật cao nhất. Mọi giao dịch đều được mã hóa SSL 256-bit và tuân thủ các quy định về bảo mật dữ liệu. Thông tin tài khoản và lịch sử giao dịch của bạn sẽ được lưu trữ an toàn và không được chia sẻ với bên thứ ba không có ủy quyền.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-wallet"></i> 2. Quy định về giao dịch</h6>
+                <p>Người dùng chịu trách nhiệm đảm bảo số dư tài khoản đủ để thực hiện giao dịch. Mỗi giao dịch thanh toán học phí chỉ được thực hiện một lần và không thể hoàn tác sau khi đã xác nhận bằng mã OTP. Hệ thống sẽ tự động gửi email xác nhận sau mỗi giao dịch thành công.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-key"></i> 3. Xác thực OTP</h6>
+                <p>Mã OTP có hiệu lực trong vòng 5 phút kể từ khi gửi. Vui lòng không chia sẻ mã OTP với bất kỳ ai. Nếu bạn nhận được mã OTP mà không thực hiện giao dịch, vui lòng liên hệ ngay với bộ phận hỗ trợ để được xử lý kịp thời.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-exclamation-triangle"></i> 4. Trách nhiệm của người dùng</h6>
+                <p>Người dùng có trách nhiệm cung cấp thông tin chính xác và cập nhật địa chỉ email để nhận mã OTP. Bạn phải bảo mật thông tin đăng nhập và không chia sẻ tài khoản với người khác. Mọi giao dịch thực hiện từ tài khoản của bạn đều được coi là do bạn thực hiện.</p>
+            `
+        },
+        {
+            title: "Chính sách và quy định thanh toán điện tử",
+            content: `
+                <h6 class="text-primary mb-3"><i class="fas fa-university"></i> 1. Phương thức thanh toán</h6>
+                <p>Hệ thống iBanking hỗ trợ thanh toán học phí trực tuyến 24/7 với giao diện thân thiện và bảo mật cao. Người dùng cần đăng nhập vào tài khoản và có đủ số dư để thực hiện giao dịch. Mọi giao dịch đều được ghi nhận và lưu trữ trong lịch sử để người dùng có thể tra cứu bất cứ lúc nào.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-clock"></i> 2. Thời gian xử lý</h6>
+                <p>Giao dịch được xử lý ngay lập tức sau khi xác thực OTP thành công. Thông báo kết quả giao dịch sẽ được gửi qua email đăng ký trong vòng 1-2 phút. Trong trường hợp có sự cố kỹ thuật, thời gian xử lý có thể kéo dài đến 24 giờ và chúng tôi sẽ thông báo chi tiết qua email.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-undo-alt"></i> 3. Chính sách hoàn tiền</h6>
+                <p>Các giao dịch đã xác nhận bằng OTP không thể hoàn tác hoặc hủy bỏ. Trong trường hợp thanh toán nhầm hoặc thanh toán trùng lặp, vui lòng liên hệ bộ phận hỗ trợ trong vòng 48 giờ kể từ thời điểm giao dịch để được xem xét và xử lý theo quy định.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-phone-alt"></i> 4. Hỗ trợ khách hàng</h6>
+                <p>Đội ngũ hỗ trợ của chúng tôi sẵn sàng giúp đỡ bạn 24/7 qua email: phanhuyphat021@gmail.com. Thời gian phản hồi trung bình là 2-4 giờ làm việc. Chúng tôi cam kết giải quyết mọi thắc mắc và khiếu nại một cách nhanh chóng và chuyên nghiệp nhất.</p>
+            `
+        },
+        {
+            title: "Quy định về bảo mật và quyền riêng tư",
+            content: `
+                <h6 class="text-primary mb-3"><i class="fas fa-lock"></i> 1. Thu thập thông tin</h6>
+                <p>Chúng tôi chỉ thu thập các thông tin cần thiết để cung cấp dịch vụ thanh toán học phí, bao gồm: họ tên, email, số điện thoại và thông tin giao dịch. Mọi thông tin được thu thập đều tuân thủ Luật An toàn thông tin mạng và được xử lý theo đúng quy định của pháp luật Việt Nam.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-user-shield"></i> 2. Bảo vệ dữ liệu cá nhân</h6>
+                <p>Thông tin cá nhân của bạn được mã hóa và lưu trữ trên hệ thống máy chủ an toàn với các biện pháp bảo mật nhiều lớp. Chúng tôi sử dụng công nghệ Firewall, IDS/IPS và thường xuyên kiểm tra bảo mật để đảm bảo an toàn tuyệt đối cho dữ liệu của người dùng.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-share-alt"></i> 3. Chia sẻ thông tin</h6>
+                <p>Chúng tôi cam kết không bán, cho thuê hoặc chia sẻ thông tin cá nhân của bạn với bên thứ ba vì mục đích thương mại. Thông tin chỉ được chia sẻ trong các trường hợp: theo yêu cầu của cơ quan nhà nước có thẩm quyền, hoặc để cung cấp dịch vụ theo yêu cầu của bạn.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-edit"></i> 4. Quyền của người dùng</h6>
+                <p>Bạn có quyền truy cập, chỉnh sửa, xóa hoặc yêu cầu sao lưu dữ liệu cá nhân của mình bất cứ lúc nào. Để thực hiện các quyền này, vui lòng liên hệ với chúng tôi qua email hỗ trợ. Chúng tôi sẽ xử lý yêu cầu của bạn trong vòng 7 ngày làm việc.</p>
+            `
+        },
+        {
+            title: "Điều khoản giao dịch và trách nhiệm pháp lý",
+            content: `
+                <h6 class="text-primary mb-3"><i class="fas fa-gavel"></i> 1. Tuân thủ pháp luật</h6>
+                <p>Người dùng cam kết sử dụng dịch vụ vì mục đích hợp pháp và tuân thủ các quy định của pháp luật Việt Nam. Nghiêm cấm sử dụng hệ thống để thực hiện các hành vi gian lận, rửa tiền, hoặc các hoạt động vi phạm pháp luật khác. Vi phạm sẽ bị xử lý theo quy định của pháp luật.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-balance-scale"></i> 2. Giới hạn trách nhiệm</h6>
+                <p>Chúng tôi không chịu trách nhiệm cho các thiệt hại phát sinh do: lỗi nhập liệu của người dùng, sự cố đường truyền internet, tấn công mạng từ bên thứ ba, hoặc các sự kiện bất khả kháng. Trong mọi trường hợp, trách nhiệm của chúng tôi được giới hạn ở mức giá trị giao dịch phát sinh lỗi.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-clipboard-check"></i> 3. Xác nhận giao dịch</h6>
+                <p>Sau khi xác nhận OTP, giao dịch được coi là hoàn tất và có giá trị pháp lý. Email xác nhận giao dịch được gửi tới là bằng chứng hợp lệ về việc thanh toán. Vui lòng lưu giữ email này để làm chứng từ khi cần thiết.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-file-contract"></i> 4. Sửa đổi điều khoản</h6>
+                <p>Chúng tôi có quyền sửa đổi các điều khoản này bất cứ lúc nào mà không cần thông báo trước. Phiên bản mới nhất của điều khoản sẽ được cập nhật trên hệ thống và có hiệu lực ngay khi đăng tải. Việc bạn tiếp tục sử dụng dịch vụ đồng nghĩa với việc chấp nhận các thay đổi.</p>
+            `
+        },
+        {
+            title: "Hướng dẫn sử dụng và an toàn giao dịch",
+            content: `
+                <h6 class="text-primary mb-3"><i class="fas fa-book"></i> 1. Cách thức thanh toán</h6>
+                <p>Để thanh toán học phí, bạn cần: đăng nhập tài khoản, nhập mã số sinh viên, chọn học kỳ cần thanh toán, kiểm tra số dư và xác nhận giao dịch. Hệ thống sẽ gửi mã OTP qua email và bạn cần nhập mã này trong vòng 5 phút để hoàn tất giao dịch. Quá trình đơn giản, nhanh chóng và an toàn tuyệt đối.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-shield-virus"></i> 2. Phòng chống gian lận</h6>
+                <p>Không bao giờ chia sẻ mã OTP, mật khẩu hoặc thông tin đăng nhập với bất kỳ ai, kể cả nhân viên hỗ trợ. Chúng tôi sẽ không bao giờ yêu cầu bạn cung cấp các thông tin này qua điện thoại hoặc email. Luôn kiểm tra URL của trang web trước khi đăng nhập và chỉ sử dụng thiết bị cá nhân đã được bảo mật.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-laptop-code"></i> 3. Bảo mật thiết bị</h6>
+                <p>Đảm bảo thiết bị của bạn được cài đặt phần mềm diệt virus và luôn cập nhật bản vá bảo mật mới nhất. Không sử dụng mạng WiFi công cộng để thực hiện giao dịch. Luôn đăng xuất sau khi hoàn tất giao dịch, đặc biệt khi sử dụng thiết bị chung.</p>
+                
+                <h6 class="text-primary mb-3 mt-4"><i class="fas fa-bell"></i> 4. Kiểm tra thường xuyên</h6>
+                <p>Thường xuyên kiểm tra lịch sử giao dịch và số dư tài khoản để phát hiện kịp thời các giao dịch bất thường. Nếu phát hiện bất kỳ hoạt động đáng ngờ nào, vui lòng liên hệ ngay với bộ phận hỗ trợ để được xử lý kịp thời và đảm bảo an toàn cho tài khoản của bạn.</p>
+            `
+        }
+    ];
+
+    // Generate random terms content
+    function generateTermsContent() {
+        const randomIndex = Math.floor(Math.random() * termsTemplates.length);
+        const selectedTemplate = termsTemplates[randomIndex];
+        
+        const termsContent = document.getElementById('termsContent');
+        termsContent.innerHTML = `
+            <h5 class="mb-4 text-center" style="color: #667eea;">
+                <i class="fas fa-file-signature"></i> ${selectedTemplate.title}
+            </h5>
+            ${selectedTemplate.content}
+            <hr class="my-4">
+            <p class="text-muted small mb-0">
+                <i class="fas fa-calendar-check"></i> <strong>Hiệu lực:</strong> Điều khoản này có hiệu lực từ ngày ${new Date().toLocaleDateString('vi-VN')}<br>
+                <i class="fas fa-building"></i> <strong>Đơn vị cung cấp:</strong> iBanking System - Hệ thống thanh toán học phí trực tuyến<br>
+                <i class="fas fa-envelope"></i> <strong>Liên hệ:</strong> phanhuyphat021@gmail.com
+            </p>
+        `;
+    }
+
+    // Open terms modal and generate content
+    const termsLink = document.getElementById('termsLink');
+    if (termsLink) {
+        termsLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            generateTermsContent();
+        });
+    }
+
+    // Accept terms button
+    const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+    if (acceptTermsBtn) {
+        acceptTermsBtn.addEventListener('click', function() {
+            termsCheckbox.checked = true;
+            updateConfirmBtnState();
+            const termsModal = bootstrap.Modal.getInstance(document.getElementById('termsModal'));
+            if (termsModal) termsModal.hide();
+            showToastSuccess('✓ Bạn đã đồng ý với điều khoản và điều kiện', 1500);
+        });
+    }
+
+    // Format VND
+    function formatVnd(num) {
+        if (isNaN(num)) return "--";
+        return new Intl.NumberFormat("vi-VN").format(Math.round(num));
+    }
+    
+    // Start monitoring balance changes in background
+    function startBalanceMonitoring() {
+        // Get initial balance
+        const availableBalanceInput = document.getElementById("availableBalance");
+        const balanceRaw = availableBalanceInput.value;
+        const initialBalance = parseFloat(balanceRaw.replace(/[,.]/g, ""));
+        lastKnownBalance = initialBalance;
+        
+        console.log('🔍 Starting balance monitoring. Initial balance:', lastKnownBalance);
+        
+        // Clear existing monitor
+        if (balanceMonitorInterval) {
+            clearInterval(balanceMonitorInterval);
+        }
+        
+        // Check balance every 3 seconds
+        balanceMonitorInterval = setInterval(() => {
+            const jwtToken = localStorage.getItem('jwtToken');
+            const userId = localStorage.getItem('userId');
+            
+            if (!jwtToken || !userId) {
+                console.error('No JWT token for balance monitoring');
+                stopBalanceMonitoring();
+                return;
+            }
+            
+            const API_BASE_URL = 'http://localhost:8080';
+            fetch(`${API_BASE_URL}/api/customers/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const newBalance = data.balance;
+                    
+                    if (lastKnownBalance !== null && newBalance !== lastKnownBalance) {
+                        console.log('💰 Balance changed!', {
+                            old: lastKnownBalance,
+                            new: newBalance,
+                            diff: newBalance - lastKnownBalance
+                        });
+                        
+                        // Update UI
+                        availableBalanceInput.value = formatVnd(newBalance);
+                        lastKnownBalance = newBalance;
+                        
+                        // Revalidate current transaction
+                        const studentId = document.getElementById("studentId").value.trim();
+                        if (studentId && studentId.length === 8) {
+                            // Trigger search to revalidate balance
+                            document.getElementById("studentId").dispatchEvent(new Event('input'));
+                        }
+                        
+                        // Show notification
+                        showToastSuccess("⚠️ Số dư tài khoản đã thay đổi!", 3000);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error monitoring balance:', err);
+                });
+        }, 3000); // Check every 3 seconds
+    }
+    
+    // Stop monitoring balance
+    function stopBalanceMonitoring() {
+        if (balanceMonitorInterval) {
+            clearInterval(balanceMonitorInterval);
+            balanceMonitorInterval = null;
+            console.log('🛑 Stopped balance monitoring');
+        }
+    }
+    
+    // Refresh user balance from server
+    function refreshUserBalance() {
+        const jwtToken = localStorage.getItem('jwtToken');
+        const userId = localStorage.getItem('userId');
+        
+        if (!jwtToken || !userId) {
+            console.error('No JWT token found for balance refresh');
+            return Promise.resolve(null);
+        }
+        
+        const API_BASE_URL = 'http://localhost:8080';
+        return fetch(`${API_BASE_URL}/api/customers/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch balance');
+                return response.json();
+            })
+            .then(data => {
+                const availableBalanceInput = document.getElementById("availableBalance");
+                const newBalance = data.balance;
+                availableBalanceInput.value = formatVnd(newBalance);
+                
+                // Revalidate balance error if student is selected
+                const tuitionAmountVal = document.getElementById("tuitionAmount").value;
+                const tuitionAmount = parseFloat((tuitionAmountVal || "").toString().replace(/[,.]/g, ""));
+                const balanceErrorElem = document.getElementById("balanceError");
+                
+                if (!isNaN(tuitionAmount) && tuitionAmount > 0 && newBalance < tuitionAmount) {
+                    balanceErrorElem.style.display = "block";
+                    availableBalanceInput.classList.add("is-invalid");
+                } else {
+                    balanceErrorElem.style.display = "none";
+                    availableBalanceInput.classList.remove("is-invalid");
+                }
+                
+                updateConfirmBtnState();
+                return newBalance;
+            })
+            .catch(err => {
+                console.error('Error refreshing balance:', err);
+                return null;
+            });
+    }
+
+    function showToastSuccess(msg, duration = 2000) {
+        const toastEl = document.getElementById("successToast");
+        const toastBody = document.getElementById("toastMessage");
+        toastBody.textContent = msg;
+        const toast = new bootstrap.Toast(toastEl, { delay: duration });
+        toast.show();
+    }
+    
+    function showToastError(msg, duration = 3000) {
+        const toastEl = document.getElementById("successToast");
+        const toastBody = toastEl.querySelector(".toast-body");
+        const toastMessage = document.getElementById("toastMessage");
+        
+        // Change to error style
+        toastBody.classList.remove("bg-success");
+        toastBody.classList.add("bg-danger");
+        toastMessage.textContent = msg;
+        
+        const toast = new bootstrap.Toast(toastEl, { delay: duration });
+        toast.show();
+        
+        // Reset to success style after toast is hidden
+        setTimeout(() => {
+            toastBody.classList.remove("bg-danger");
+            toastBody.classList.add("bg-success");
+        }, duration + 500);
+    }
+    
+    function showLoading() {
+        document.getElementById("loadingOverlay").style.display = "flex";
+    }
+    
+    function hideLoading() {
+        document.getElementById("loadingOverlay").style.display = "none";
+    }
+    
+    function startResendCountdown(seconds = 30) {
+        resendCountdown = seconds;
+        resendOtpBtn.disabled = true;
+        countdownBadge.style.display = "inline-block";
+        
+        if (resendInterval) clearInterval(resendInterval);
+        
+        resendInterval = setInterval(() => {
+            resendCountdown--;
+            countdownBadge.textContent = `${resendCountdown}s`;
+            
+            if (resendCountdown <= 0) {
+                clearInterval(resendInterval);
+                resendInterval = null;
+                resendOtpBtn.disabled = false;
+                countdownBadge.style.display = "none";
+            }
+        }, 1000);
+        
+        countdownBadge.textContent = `${resendCountdown}s`;
+    }
+
+    function updateConfirmBtnState() {
+        const termsChecked = termsCheckbox.checked;
+        const studentId = document.getElementById("studentId").value.trim();
+        const studentIdValid = studentId.length === 8;
+        const balanceErrorVisible = document.getElementById("balanceError")?.style.display === "block";
+        const semesterSelected = selectedSemesterFee !== null;
+
+        const tuitionAmountVal = document.getElementById("tuitionAmount").value;
+        const tuitionAmountNum = parseFloat((tuitionAmountVal || "").toString().replace(/[,.]/g, ""));
+        const tuitionZero = isNaN(tuitionAmountNum) || tuitionAmountNum <= 0;
+        const alreadyPaid = selectedSemesterFee?.isPaid === true;
+        const cannotPay = selectedSemesterFee?.canPay === false;
+
+        confirmBtn.disabled = !(termsChecked && studentIdValid && semesterSelected && !balanceErrorVisible && !tuitionZero && !alreadyPaid && !cannotPay);
+    }
+
+    // Check if student ID input changes
+    let currentSemesters = []; // Store semesters for current student
+    let selectedSemesterFee = null; // Track selected semester fee
+    
+    document.getElementById("studentId").addEventListener("input", function() {
+        const studentId = this.value.trim();
+        const studentIdError = document.getElementById("studentIdError");
+        const studentNotFoundError = document.getElementById("studentNotFoundError");
+        const semesterSelect = document.getElementById("semester");
+        const semesterError = document.getElementById("semesterError");
+
+        if (studentId.length === 0) {
+            studentIdError.style.display = "none";
+            studentNotFoundError.style.display = "none";
+            resetStudentForm();
+            semesterSelect.disabled = true;
+            semesterSelect.innerHTML = '<option value="">-- Chọn học kỳ --</option>';
+            currentSemesters = [];
+            updateConfirmBtnState();
+            return;
+        }
+
+        if (studentId.length !== 8) {
+            studentIdError.style.display = "block";
+            studentNotFoundError.style.display = "none";
+            resetStudentForm();
+            semesterSelect.disabled = true;
+            semesterSelect.innerHTML = '<option value="">-- Chọn học kỳ --</option>';
+            currentSemesters = [];
+            updateConfirmBtnState();
+            return;
+        }
+
+        studentIdError.style.display = "none";
+        studentNotFoundError.style.display = "none";
+
+        // Get JWT token
+        const jwtToken = localStorage.getItem('jwtToken');
+        if (!jwtToken) {
+            console.error('No JWT token found');
+            window.location.replace("login.html");
+            return;
+        }
+
+        const API_BASE_URL = 'http://localhost:8080';
+        
+        // Fetch student info and semesters
+        Promise.all([
+            fetch(`${API_BASE_URL}/api/students/search/${studentId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                if (!res.ok) throw new Error("Student not found");
+                return res.json();
+            }),
+            fetch(`${API_BASE_URL}/api/students/${studentId}/semesters`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                if (!res.ok) throw new Error("Semesters not found");
+                return res.json();
+            })
+        ])
+        .then(([studentData, semesters]) => {
+            // Hide error messages on success
+            studentIdError.style.display = "none";
+            studentNotFoundError.style.display = "none";
+            
+            // Update student name
+            console.log('Student data:', studentData);
+            document.getElementById("studentName").value = studentData.fullName || "--";
+            
+            // Update semesters dropdown
+            currentSemesters = semesters;
+            semesterSelect.innerHTML = '<option value="">-- Chọn học kỳ --</option>';
+            
+            semesters.forEach(semester => {
+                const option = document.createElement('option');
+                option.value = semester.id;
+                
+                // Hiển thị text với trạng thái
+                let displayText = `${semester.semesterCode} - ${formatVnd(semester.remainingFee)} VNĐ`;
+                if (semester.isPaid) {
+                    displayText += ' ✓ Đã thanh toán';
+                    option.disabled = true;
+                    option.style.color = '#28a745';
+                } else if (!semester.canPay) {
+                    displayText += ' ⚠️ Cần thanh toán học kỳ trước';
+                    option.disabled = true;
+                    option.style.color = '#dc3545';
+                }
+                
+                option.textContent = displayText;
+                option.dataset.fee = semester.remainingFee;
+                option.dataset.isPaid = semester.isPaid;
+                option.dataset.canPay = semester.canPay;
+                option.dataset.semesterCode = semester.semesterCode;
+                semesterSelect.appendChild(option);
+            });
+            
+            semesterSelect.disabled = false;
+            semesterError.style.display = "none";
+            updateConfirmBtnState();
+        })
+        .catch(err => {
+            console.error('Error loading student:', err);
+            
+            // Show "MSSV không tồn tại" error
+            studentIdError.style.display = "none";
+            studentNotFoundError.style.display = "block";
+            
+            resetStudentForm();
+            semesterSelect.disabled = true;
+            semesterSelect.innerHTML = '<option value="">-- Chọn học kỳ --</option>';
+            currentSemesters = [];
+            updateConfirmBtnState();
+        });
+    });
+    
+    // Semester selection handler
+    document.getElementById("semester").addEventListener("change", function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const semesterError = document.getElementById("semesterError");
+        const balanceErrorElem = document.getElementById("balanceError");
+        const availableBalanceInput = document.getElementById("availableBalance");
+        const tuitionPaidMsg = document.getElementById("tuitionPaidMsg");
+        const paymentStatusInput = document.getElementById("paymentStatus");
+        
+        if (!this.value) {
+            document.getElementById("tuitionAmount").value = "--";
+            document.getElementById("payAmount").value = "--";
+            paymentStatusInput.value = "--";
+            semesterError.style.display = "none";
+            balanceErrorElem.style.display = "none";
+            availableBalanceInput.classList.remove("is-invalid");
+            if (tuitionPaidMsg) tuitionPaidMsg.style.display = "none";
+            selectedSemesterFee = null;
+            updateConfirmBtnState();
+            return;
+        }
+        
+        const fee = parseFloat(selectedOption.dataset.fee);
+        const isPaid = selectedOption.dataset.isPaid === 'true';
+        const canPay = selectedOption.dataset.canPay === 'true';
+        const semesterCode = selectedOption.dataset.semesterCode;
+        
+        selectedSemesterFee = {
+            id: this.value,
+            fee: fee,
+            isPaid: isPaid,
+            canPay: canPay,
+            semesterCode: semesterCode
+        };
+        
+        document.getElementById("tuitionAmount").value = formatVnd(fee);
+        document.getElementById("payAmount").value = formatVnd(fee);
+        
+        if (isPaid) {
+            paymentStatusInput.value = "Đã thanh toán";
+            if (tuitionPaidMsg) tuitionPaidMsg.style.display = "block";
+        } else {
+            paymentStatusInput.value = "Chưa thanh toán";
+            if (tuitionPaidMsg) tuitionPaidMsg.style.display = "none";
+        }
+        
+        // Check balance
+        const balanceRaw = availableBalanceInput.value;
+        const availableBalance = parseFloat(balanceRaw.replace(/[,.]/g, ""));
+        
+        console.log('=== BALANCE CHECK ===');
+        console.log('Balance Raw:', balanceRaw);
+        console.log('Available Balance (parsed):', availableBalance);
+        console.log('Tuition Fee:', fee);
+        console.log('Is Paid:', isPaid);
+        console.log('Is Sufficient:', availableBalance >= fee);
+        
+        if (!isNaN(availableBalance) && !isNaN(fee) && availableBalance < fee && !isPaid) {
+            balanceErrorElem.style.display = "block";
+            availableBalanceInput.classList.add("is-invalid");
+            console.log('❌ Insufficient balance!');
+        } else {
+            balanceErrorElem.style.display = "none";
+            availableBalanceInput.classList.remove("is-invalid");
+            console.log('✅ Balance is sufficient');
+        }
+        
+        semesterError.style.display = "none";
+        updateConfirmBtnState();
+    });
+    
+    function resetStudentForm() {
+        document.getElementById("studentName").value = "--";
+        document.getElementById("tuitionAmount").value = "--";
+        document.getElementById("payAmount").value = "--";
+        document.getElementById("paymentStatus").value = "--";
+        document.getElementById("balanceError").style.display = "none";
+        document.getElementById("availableBalance").classList.remove("is-invalid");
+        
+        // Hide all error messages
+        const studentIdError = document.getElementById("studentIdError");
+        const studentNotFoundError = document.getElementById("studentNotFoundError");
+        if (studentIdError) studentIdError.style.display = "none";
+        if (studentNotFoundError) studentNotFoundError.style.display = "none";
+        
+        const tuitionPaidMsg = document.getElementById("tuitionPaidMsg");
+        if (tuitionPaidMsg) tuitionPaidMsg.style.display = "none";
+        selectedSemesterFee = null;
+    }
+
+    // Terms checkbox
+    termsCheckbox.addEventListener("change", updateConfirmBtnState);
+
+    // Form submission - Open OTP modal and send OTP
+    document.getElementById("paymentForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+        const studentId = document.getElementById("studentId").value.trim();
+        
+        if (!studentId || studentId.length !== 8) {
+            showToastError("⚠️ Vui lòng nhập đầy đủ MSSV (8 ký tự)");
+            return;
+        }
+
+        // Clear OTP inputs
+        document.querySelectorAll(".otp-input").forEach(i => (i.value = ""));
+        const otpErrorEl = document.getElementById("otpError");
+        otpErrorEl.classList.add("d-none");
+
+        // Show OTP modal
+        const otpModalEl = document.getElementById("otpModal");
+        const otpModal = new bootstrap.Modal(otpModalEl);
+        otpModal.show();
+
+        paidNotified = false;
+        
+        // Refresh balance before sending OTP
+        refreshUserBalance().then(() => {
+            console.log('Balance refreshed before OTP send');
+        });
+        
+        // Start monitoring balance changes while OTP modal is open
+        startBalanceMonitoring();
+        
+        // Get JWT token
+        const jwtToken = localStorage.getItem('jwtToken');
+        if (!jwtToken) {
+            showToastError("⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            setTimeout(() => {
+                window.location.replace("login.html");
+            }, 1000);
+            return;
+        }
+        
+        const API_BASE_URL = 'http://localhost:8080';
+        const userId = localStorage.getItem('userId');
+        
+        // Get customer info for OTP
+        const customerResponse = await fetch(`${API_BASE_URL}/api/customers/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!customerResponse.ok) {
+            showToastError("⚠️ Không thể lấy thông tin khách hàng");
+            return;
+        }
+        
+        const customerData = await customerResponse.json();
+        
+        // Show loading and send OTP
+        showLoading();
+        fetch(`${API_BASE_URL}/api/otp/generate`, { 
+            method: "POST",
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                studentId: studentId,
+                customerId: userId,
+                customerEmail: customerData.email,
+                customerName: customerData.fullName || customerData.username
+            })
+        })
+            .then(async res => {
+                hideLoading();
+                const data = await res.json();
+                
+                if (!res.ok) {
+                    // Close OTP modal on error
+                    const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                    if (modal) modal.hide();
+                    
+                    if (res.status === 401) {
+                        showToastError("⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+                        setTimeout(() => {
+                            window.location.replace("login.html");
+                        }, 2000);
+                    } else if (res.status === 409) {
+                        showToastError("⚠️ " + (data.message || "Học phí đang được xử lý hoặc đã thanh toán."));
+                    } else {
+                        showToastError("❌ " + (data.message || "Không thể gửi OTP. Vui lòng thử lại."));
+                    }
+                } else {
+                    const first = document.querySelector(".otp-input");
+                    if (first) first.focus();
+                    showToastSuccess("✅ " + (data.message || "OTP đã được gửi đến email của bạn."), 1500);
+                    startResendCountdown(30);
+                }
+            })
+            .catch(err => {
+                hideLoading();
+                console.error(err);
+                const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                if (modal) modal.hide();
+                showToastError("❌ Kết nối mạng không ổn định. Vui lòng thử lại.");
+            });
+    });
+
+    // OTP input handling - auto-focus next and verify when complete
+    document.querySelectorAll(".otp-input").forEach((input, index) => {
+        input.addEventListener("input", function() {
+            this.value = this.value.replace(/[^0-9]/g, "").slice(0, 1);
+            const otpInputsEls = document.querySelectorAll(".otp-input");
+            
+            if (this.value.length === 1 && index < otpInputsEls.length - 1) {
+                otpInputsEls[index + 1].focus();
+                otpInputsEls[index + 1].select();
+            }
+
+            const full = Array.from(otpInputsEls).every(i => i.value.length === 1);
+            if (full) {
+                const otp = Array.from(otpInputsEls).map(i => i.value).join("");
+                const studentId = document.getElementById("studentId").value.trim();
+                const userId = localStorage.getItem('userId');
+                
+                const otpErrorEl = document.getElementById("otpError");
+                otpErrorEl.classList.add("d-none");
+                
+                // Get JWT token
+                const jwtToken = localStorage.getItem('jwtToken');
+                if (!jwtToken) {
+                    showToastError("⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+                    setTimeout(() => {
+                        window.location.replace("login.html");
+                    }, 1000);
+                    return;
+                }
+                
+                // Get payment amount from selected semester
+                if (!selectedSemesterFee || !selectedSemesterFee.fee) {
+                    otpErrorEl.textContent = "Không tìm thấy thông tin học phí";
+                    otpErrorEl.classList.remove("d-none");
+                    return;
+                }
+                
+                const API_BASE_URL = 'http://localhost:8080';
+                
+                showLoading();
+                
+                // Call payment confirm API with semesterFeeId
+                fetch(`${API_BASE_URL}/api/payments/confirm`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${jwtToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        customerId: userId,
+                        studentId: studentId,
+                        amount: selectedSemesterFee.fee,
+                        otp: otp,
+                        semesterFeeId: selectedSemesterFee.id
+                    })
+                })
+                    .then(async res => {
+                        hideLoading();
+                        const data = await res.json();
+                        
+                        if (!res.ok) {
+                            // Check specific error status
+                            if (res.status === 400) {
+                                // Check if it's insufficient balance
+                                if (data.errorType === 'INSUFFICIENT_BALANCE') {
+                                    // Close modal and show error
+                                    const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                                    if (modal) modal.hide();
+                                    showToastError("⚠️ " + data.message, 4000);
+                                    return;
+                                }
+                                
+                                // Check if it's payment order error
+                                if (data.message && data.message.includes("phải thanh toán")) {
+                                    // Close modal and show error toast for payment order
+                                    const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                                    if (modal) modal.hide();
+                                    showToastError("⚠️ " + data.message, 4000);
+                                    setTimeout(() => window.location.reload(), 2000);
+                                    return;
+                                }
+                                
+                                // OTP invalid or expired - show error in modal
+                                throw new Error(data.message || "OTP không hợp lệ");
+                            }
+                            if (res.status === 409) {
+                                // Already paid or conflict
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                                if (modal) modal.hide();
+                                
+                                // Check if it's ALREADY_PAID by another user
+                                if (data.errorType === 'ALREADY_PAID' || data.shouldRefresh) {
+                                    // Show warning and force refresh
+                                    showToastError("⚠️ " + data.message, 3000);
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 3000);
+                                } else {
+                                    // Generic already paid message
+                                    showToastSuccess("✅ " + (data.message || "Học phí đã được thanh toán."), 2000);
+                                    setTimeout(() => window.location.reload(), 1200);
+                                }
+                                return;
+                            }
+                            if (res.status === 401) {
+                                // Session expired
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                                if (modal) modal.hide();
+                                showToastError("⚠️ " + (data.message || "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."));
+                                setTimeout(() => {
+                                    window.location.replace("login.html");
+                                }, 2000);
+                                return;
+                            }
+                            // Other errors
+                            throw new Error(data.message || "Đã xảy ra lỗi khi xử lý giao dịch");
+                        }
+
+                        // Success - close modal and show success message
+                        const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                        if (modal) modal.hide();
+
+                        const semesterInfo = selectedSemesterFee ? ` (${selectedSemesterFee.semesterCode})` : '';
+                        showToastSuccess(`✅ Thanh toán học phí thành công${semesterInfo}!`, 2000);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    })
+                    .catch((error) => {
+                        hideLoading();
+                        // Show error message inside OTP modal
+                        console.error('OTP verification error:', error);
+                        otpErrorEl.classList.remove("d-none");
+                        otpInputsEls.forEach(i => (i.value = ""));
+                        otpInputsEls[0].focus();
+                    });
+            }
+        });
+
+        // Allow backspace to go to previous input
+        input.addEventListener("keydown", function(e) {
+            if (e.key === "Backspace" && this.value === "" && index > 0) {
+                const otpInputsEls = document.querySelectorAll(".otp-input");
+                otpInputsEls[index - 1].focus();
+                otpInputsEls[index - 1].select();
+            }
+        });
+    });
+
+    // Resend OTP button
+    resendOtpBtn.addEventListener("click", async function() {
+        if (resendOtpBtn.disabled) return;
+        
+        const studentId = document.getElementById("studentId").value.trim();
+        if (!studentId || studentId.length !== 8) return;
+
+        // Get JWT token
+        const jwtToken = localStorage.getItem('jwtToken');
+        if (!jwtToken) {
+            showToastError("⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            setTimeout(() => {
+                window.location.replace("login.html");
+            }, 1000);
+            return;
+        }
+
+        const API_BASE_URL = 'http://localhost:8080';
+        const userId = localStorage.getItem('userId');
+
+        try {
+            showLoading();
+            
+            // Get customer info for OTP
+            const customerResponse = await fetch(`${API_BASE_URL}/api/customers/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!customerResponse.ok) {
+                hideLoading();
+                showToastError("⚠️ Không thể lấy thông tin khách hàng");
+                return;
+            }
+            
+            const customerData = await customerResponse.json();
+            
+            // Note: No need to call expired endpoint as service handles it
+            const res = await fetch(`${API_BASE_URL}/api/otp/generate`, { 
+                method: "POST",
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    studentId: studentId,
+                    customerId: userId,
+                    customerEmail: customerData.email,
+                    customerName: customerData.fullName || customerData.username
+                })
+            });
+            
+            hideLoading();
+
+            if (!res.ok) {
+                let data = null;
+                try { 
+                    data = await res.json(); 
+                } catch {}
+                
+                if (res.status === 401) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById("otpModal"));
+                    if (modal) modal.hide();
+                    showToastError("⚠️ " + (data?.message || "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."));
+                    setTimeout(() => {
+                        window.location.replace("login.html");
+                    }, 2000);
+                    return;
+                }
+                if (res.status === 409) {
+                    showToastError("⚠️ " + (data?.message || "Học phí đang được xử lý hoặc đã thanh toán."));
+                    return;
+                }
+                showToastError("❌ " + (data?.message || "Không thể gửi lại OTP. Vui lòng thử lại."));
+                return;
+            }
+
+            document.querySelectorAll(".otp-input").forEach(i => (i.value = ""));
+            const otpErrorEl = document.getElementById("otpError");
+            otpErrorEl.classList.add("d-none");
+            const first = document.querySelector(".otp-input");
+            if (first) first.focus();
+            
+            showToastSuccess("✅ OTP mới đã được gửi đến email.", 1500);
+            startResendCountdown(30);
+        } catch (err) {
+            hideLoading();
+            console.error(err);
+            showToastError("❌ Kết nối mạng không ổn định. Vui lòng thử lại.");
+        }
+    });
+
+    // View history button
+    document.getElementById("viewHistoryBtn").addEventListener("click", function() {
+        // Get JWT token and userId
+        const jwtToken = localStorage.getItem('jwtToken');
+        const userId = localStorage.getItem('userId');
+        
+        if (!jwtToken || !userId) {
+            showToastError("⚠️ Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+            setTimeout(() => {
+                window.location.replace("login.html");
+            }, 1000);
+            return;
+        }
+        
+        const API_BASE_URL = 'http://localhost:8080';
+        
+        fetch(`${API_BASE_URL}/api/payments/history/${userId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById("historyTableBody");
+                tbody.innerHTML = "";
+                
+                if (!data || data.length === 0) {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = '<td colspan="4" class="text-center">Chưa có giao dịch nào</td>';
+                    tbody.appendChild(tr);
+                } else {
+                    data.forEach(item => {
+                        const tr = document.createElement("tr");
+                        const content = item.content || "Thanh toán học phí";
+                        tr.innerHTML = `
+                <td>${item.id}</td>
+                <td>${item.createdAt}</td>
+                <td>${formatVnd(item.amount)}</td>
+                <td>${content}</td>
+              `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                const modal = new bootstrap.Modal(document.getElementById("historyModal"));
+                modal.show();
+            })
+            .catch(() => {});
+    });
+
+    // Clean up polling when modal closes
+    document.getElementById("otpModal").addEventListener("hidden.bs.modal", function() {
+        if (paidPollInterval) {
+            clearInterval(paidPollInterval);
+            paidPollInterval = null;
+        }
+        if (resendInterval) {
+            clearInterval(resendInterval);
+            resendInterval = null;
+        }
+        resendOtpBtn.disabled = false;
+        countdownBadge.style.display = "none";
+        
+        // Stop balance monitoring when modal closes
+        stopBalanceMonitoring();
+        
+        // Remove focus from modal to prevent aria-hidden warning
+        document.activeElement?.blur();
+    });
+    
+    // Auto-refresh balance when tab/window gains focus
+    window.addEventListener('focus', function() {
+        console.log('Tab focused - refreshing balance...');
+        refreshUserBalance();
+    });
+    
+    // Refresh balance when page becomes visible (tab switch)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            console.log('Page visible - refreshing balance...');
+            refreshUserBalance();
+        }
+    });
+    
+    // Initial balance refresh on page load
+    window.addEventListener('load', function() {
+        console.log('Page loaded - initial balance refresh...');
+        loadUserInfo();
+        refreshUserBalance();
+    });
+    
+    // ========================================
+    // LOAD USER INFO FROM API
+    // ========================================
+    async function loadUserInfo() {
+        try {
+            console.log('🔍 Loading user info...');
+            
+            // Get JWT token from localStorage
+            const jwtToken = localStorage.getItem('jwtToken');
+            const userId = localStorage.getItem('userId');
+            
+            console.log('� JWT Token:', jwtToken ? 'Present' : 'Missing');
+            console.log('👤 User ID:', userId);
+            
+            if (!jwtToken || !userId) {
+                console.error('❌ No JWT token or userId found - redirecting to login');
+                setTimeout(() => {
+                    window.location.replace("login.html");
+                }, 500);
+                return;
+            }
+            
+            const API_BASE_URL = 'http://localhost:8080';
+            const response = await fetch(`${API_BASE_URL}/api/customers/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwtToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            console.log('📡 Response status:', response.status);
+            
+            if (!response.ok) {
+                console.error('❌ Failed to load user info, status:', response.status);
+                if (response.status === 401) {
+                    console.error('❌ Unauthorized - token expired, redirecting to login');
+                    localStorage.clear();
+                    setTimeout(() => {
+                        window.location.replace("login.html");
+                    }, 500);
+                }
+                return;
+            }
+            
+            const data = await response.json();
+            console.log('✅ User data received:', data);
+            
+            // Update navbar
+            const navbarUsername = document.getElementById('navbarUsername');
+            if (navbarUsername) {
+                navbarUsername.textContent = data.username;
+            }
+            
+            // Update form fields
+            const fullNameInput = document.getElementById('fullName');
+            const phoneNumberInput = document.getElementById('phoneNumber');
+            const emailAddressInput = document.getElementById('emailAddress');
+            const availableBalanceInput = document.getElementById('availableBalance');
+            
+            if (fullNameInput) fullNameInput.value = data.fullName || data.username;
+            if (phoneNumberInput) phoneNumberInput.value = data.phoneNumber || '';
+            if (emailAddressInput) emailAddressInput.value = data.email;
+            if (availableBalanceInput) availableBalanceInput.value = formatVnd(data.balance);
+            
+            console.log('✅ User info loaded successfully');
+            
+        } catch (error) {
+            console.error('❌ Failed to load user info:', error);
+            // Clear storage and redirect to login
+            localStorage.clear();
+            setTimeout(() => {
+                window.location.replace("login.html");
+            }, 1000);
+        }
+    }
+    
+    // ========================================
+    // LOGOUT HANDLER
+    // ========================================
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    window.location.replace("login.html");
+                } else {
+                    console.error('Logout failed');
+                    // Force redirect anyway
+                    window.location.replace("login.html");
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Force redirect anyway
+                window.location.replace("login.html");
+            }
+        });
+    } else {
+        console.warn('Logout button not found');
+    }
+    
+    }); // End DOMContentLoaded
+</script>
+
+</body>
+</html>

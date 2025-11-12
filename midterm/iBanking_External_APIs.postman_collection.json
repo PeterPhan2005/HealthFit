@@ -1,0 +1,385 @@
+{
+	"info": {
+		"_postman_id": "microservices-external-api",
+		"name": "iBanking Microservices - External APIs Only",
+		"description": "� EXTERNAL APIs - Chỉ các endpoint được gọi từ Browser/Frontend\n\n📋 Test Accounts:\n- Admin: admin / admin123 (Customer ID: 1)\n- Mary: mary / mary123 (Customer ID: 2)\n- John: john / john123 (Customer ID: 3)\n\n🎓 Student ID để test: 523H1001\n\n📦 External APIs (Browser → Gateway → Services):\n- AUTH: Login, Logout\n- CUSTOMER: Get customer info by ID\n- STUDENT: Search student, Get semesters, Get semester detail\n- PAYMENT: Generate OTP, Confirm payment, Get history\n- GATEWAY: Pages (login.html, home.html)\n\n✅ Đã loại bỏ tất cả INTERNAL APIs (Feign Client calls)\n\nUpdated: 2025-11-03",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 AUTH SERVICE",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "8080",
+							"path": ["api", "auth", "login"]
+						},
+						"description": "✅ EXTERNAL - Browser gọi để đăng nhập\nResponse: { id, username, email, token }"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "http://localhost:8080/api/auth/logout",
+						"description": "✅ EXTERNAL - Browser gọi để đăng xuất\nClear session và JWT token"
+					}
+				}
+			],
+			"description": "🔐 Authentication APIs - Đăng nhập/Đăng xuất từ browser"
+		},
+		{
+			"name": "👤 CUSTOMER SERVICE",
+			"item": [
+				{
+					"name": "Get Customer By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/customers/1",
+						"description": "✅ EXTERNAL - Browser gọi để lấy thông tin khách hàng\nResponse: { id, username, email, balance }"
+					}
+				}
+			],
+			"description": "👤 Customer APIs - Xem thông tin khách hàng"
+		},
+		{
+			"name": "🎓 STUDENT SERVICE",
+			"item": [
+				{
+					"name": "Search Student",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/search/523H1001",
+						"description": "✅ EXTERNAL - Browser gọi để tìm sinh viên theo MSSV\nResponse: { id, fullName, email, class, ... }"
+					}
+				},
+				{
+					"name": "Get Student Semesters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/523H1001/semesters",
+						"description": "✅ EXTERNAL - Browser gọi để lấy danh sách học kỳ + trạng thái thanh toán\nResponse: [{ id, semesterCode, semesterName, fee, paidAmount, isPaid }]"
+					}
+				},
+				{
+					"name": "Get Semester Fee Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/523H1001/semesters/1",
+						"description": "✅ EXTERNAL - Browser gọi để xem chi tiết học phí 1 học kỳ\nResponse: { id, semesterCode, fee, paidAmount, isPaid, dueDate }"
+					}
+				}
+			],
+			"description": "🎓 Student APIs - Tìm kiếm sinh viên và xem học phí"
+		},
+		{
+			"name": "💳 PAYMENT SERVICE",
+			"item": [
+				{
+					"name": "Generate OTP",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"studentId\": \"523H1001\",\n  \"customerEmail\": \"admin@example.com\",\n  \"customerName\": \"Admin User\"\n}"
+						},
+						"url": "http://localhost:8080/api/otp/generate",
+						"description": "✅ EXTERNAL - Browser gọi để tạo mã OTP gửi email\nResponse: { success: true, message: 'OTP sent' }"
+					}
+				},
+				{
+					"name": "Confirm Payment",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"studentId\": \"523H1001\",\n  \"amount\": 4765970,\n  \"otp\": \"123456\",\n  \"semesterFeeId\": 1\n}"
+						},
+						"url": "http://localhost:8080/api/payments/confirm",
+						"description": "✅ EXTERNAL - Browser gọi để xác nhận thanh toán với OTP\nResponse: { success: true, transactionId, status }"
+					}
+				},
+				{
+					"name": "Get Payment History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/payments/history/1",
+						"description": "✅ EXTERNAL - Browser gọi để xem lịch sử giao dịch\nResponse: [{ id, studentId, amount, status, createdAt }]"
+					}
+				}
+			],
+			"description": "💳 Payment APIs - Tạo OTP, thanh toán và xem lịch sử"
+		},
+		{
+			"name": "🌐 GATEWAY & UI",
+			"item": [
+				{
+					"name": "Login Page",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/login.html",
+						"description": "✅ EXTERNAL - Trang đăng nhập"
+					}
+				},
+				{
+					"name": "Home Page",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/home.html",
+						"description": "✅ EXTERNAL - Trang chủ sau khi đăng nhập (Payment Dashboard)"
+					}
+				}
+			],
+			"description": "🌐 Gateway & UI - Các trang web"
+		},
+		{
+			"name": "⚡ CONCURRENT PAYMENT TEST",
+			"item": [
+				{
+					"name": "User 1 (Admin): Step 1 - Login",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": "http://localhost:8080/api/auth/login",
+						"description": "🔵 ADMIN - Đăng nhập tài khoản admin"
+					}
+				},
+				{
+					"name": "User 1 (Admin): Step 2 - Search Student",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/search/523H1001",
+						"description": "🔵 ADMIN - Tìm sinh viên 523H1001"
+					}
+				},
+				{
+					"name": "User 1 (Admin): Step 3 - Get Semesters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/523H1001/semesters",
+						"description": "🔵 ADMIN - Xem danh sách học kỳ (chọn HK3_2024 chưa thanh toán)"
+					}
+				},
+				{
+					"name": "User 1 (Admin): Step 4 - Generate OTP",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"studentId\": \"523H1001\",\n  \"customerEmail\": \"khangtrongclone@gmail.com\",\n  \"customerName\": \"Admin User\"\n}"
+						},
+						"url": "http://localhost:8080/api/otp/generate",
+						"description": "🔵 ADMIN - Tạo OTP gửi về email khangtrongclone@gmail.com"
+					}
+				},
+				{
+					"name": "User 2 (Mary): Step 1 - Login",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"mary\",\n  \"password\": \"mary123\"\n}"
+						},
+						"url": "http://localhost:8080/api/auth/login",
+						"description": "🔴 MARY - Đăng nhập tài khoản mary"
+					}
+				},
+				{
+					"name": "User 2 (Mary): Step 2 - Search Student",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/search/523H1001",
+						"description": "🔴 MARY - Tìm sinh viên 523H1001 (cùng MSSV với admin)"
+					}
+				},
+				{
+					"name": "User 2 (Mary): Step 3 - Get Semesters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/523H1001/semesters",
+						"description": "🔴 MARY - Xem danh sách học kỳ (chọn HK3_2024 - CÙNG HỌC KỲ với admin)"
+					}
+				},
+				{
+					"name": "User 2 (Mary): Step 4 - Generate OTP",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 2,\n  \"studentId\": \"523H1001\",\n  \"customerEmail\": \"angiatoru09@gmail.com\",\n  \"customerName\": \"Mary User\"\n}"
+						},
+						"url": "http://localhost:8080/api/otp/generate",
+						"description": "🔴 MARY - Tạo OTP gửi về email angiatoru09@gmail.com"
+					}
+				},
+				{
+					"name": "⚡ CONCURRENT: User 1 (Admin) - Confirm Payment",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"studentId\": \"523H1001\",\n  \"amount\": 4765970,\n  \"otp\": \"REPLACE_WITH_ADMIN_OTP\",\n  \"semesterFeeId\": 3\n}"
+						},
+						"url": "http://localhost:8080/api/payments/confirm",
+						"description": "⚡ ADMIN - Thanh toán HK3_2024\n\n🎯 HƯỚNG DẪN:\n1. Check email khangtrongclone@gmail.com\n2. Copy OTP vào \"REPLACE_WITH_ADMIN_OTP\"\n3. Mở Postman tab khác cho Mary\n4. Click SEND đồng thời cả 2 tabs!"
+					}
+				},
+				{
+					"name": "⚡ CONCURRENT: User 2 (Mary) - Confirm Payment",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 2,\n  \"studentId\": \"523H1001\",\n  \"amount\": 4765970,\n  \"otp\": \"REPLACE_WITH_MARY_OTP\",\n  \"semesterFeeId\": 3\n}"
+						},
+						"url": "http://localhost:8080/api/payments/confirm",
+						"description": "⚡ MARY - Thanh toán HK3_2024 (CÙNG HỌC KỲ)\n\n🎯 HƯỚNG DẪN:\n1. Check email angiatoru09@gmail.com\n2. Copy OTP vào \"REPLACE_WITH_MARY_OTP\"\n3. Mở Postman tab mới (duplicate tab này)\n4. Click SEND đồng thời với Admin tab!\n\n⚠️ KẾT QUẢ MONG ĐỢI:\n✅ User nhanh hơn: Success\n❌ User chậm hơn: Error 409 - Học phí đã được thanh toán"
+					}
+				},
+				{
+					"name": "Verify: Get Admin Balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/customers/1",
+						"description": "✅ Kiểm tra số dư Admin sau concurrent test\n\nMong đợi:\n- Nếu Admin thanh toán trước: Giảm 4,765,970 VNĐ\n- Nếu Mary thanh toán trước: Không đổi"
+					}
+				},
+				{
+					"name": "Verify: Get Mary Balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/customers/2",
+						"description": "✅ Kiểm tra số dư Mary sau concurrent test\n\nMong đợi:\n- Nếu Mary thanh toán trước: Giảm 4,765,970 VNĐ\n- Nếu Admin thanh toán trước: Không đổi"
+					}
+				},
+				{
+					"name": "Verify: Get HK3 Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/523H1001/semesters/3",
+						"description": "✅ Kiểm tra trạng thái HK3_2024\n\nMong đợi:\n- isPaid: true\n- paidAmount: 4765970\n- version: 1 (đã update 1 lần với optimistic lock)"
+					}
+				}
+			],
+			"description": "⚡ CONCURRENT PAYMENT TEST - Test thanh toán đồng thời\n\n🎯 MỤC ĐÍCH:\nKiểm tra cơ chế Optimistic Locking khi 2 user cùng thanh toán 1 học phí đồng thời\n\n📋 KỊCH BẢN:\n- Admin (User 1) và Mary (User 2) cùng muốn thanh toán HK3_2024 cho sinh viên 523H1001\n- Cả 2 đều tạo OTP và nhập mã\n- Click \"Confirm Payment\" gần như cùng lúc\n- Hệ thống phải đảm bảo CHỈ 1 người thanh toán thành công\n\n🔒 CƠ CHẾ BẢO VỆ:\n1. Student Service: Optimistic Locking với @Version field\n2. Payment Service: Check semester paid TRƯỚC KHI deduct balance\n3. Frontend: Nhận HTTP 409 → Hiển thị \"Học phí đã được thanh toán\" → Auto reload\n\n✅ KẾT QUẢ ĐÚNG:\n- User thanh toán TRƯỚC: HTTP 200, balance giảm, HK3 isPaid=true\n- User thanh toán SAU: HTTP 409 Conflict, balance không đổi, nhận message error\n- Database: Chỉ 1 transaction được tạo\n- Version field: Tăng từ 0 lên 1 (chứng tỏ chỉ update 1 lần)\n\n🚀 CÁCH TEST:\n1. Chạy Step 1-4 cho Admin\n2. Chạy Step 1-4 cho Mary\n3. Mở 2 Postman tabs:\n   - Tab 1: Admin Confirm Payment\n   - Tab 2: Mary Confirm Payment\n4. Nhập OTP thật từ email vào cả 2\n5. Click SEND đồng thời (hoặc cách nhau vài giây)\n6. Xem response: 1 success, 1 error 409\n7. Verify balance và HK3 status"
+		},
+		{
+			"name": "📊 FULL WORKFLOW TEST",
+			"item": [
+				{
+					"name": "Step 1: Login",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": "http://localhost:8080/api/auth/login",
+						"description": "Đăng nhập với tài khoản admin"
+					}
+				},
+				{
+					"name": "Step 2: Get Customer Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/customers/1",
+						"description": "Lấy thông tin khách hàng (ID=1 = admin)"
+					}
+				},
+				{
+					"name": "Step 3: Search Student",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/search/523H1001",
+						"description": "Tìm sinh viên theo MSSV"
+					}
+				},
+				{
+					"name": "Step 4: Get Semester Fees",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/students/523H1001/semesters",
+						"description": "Xem danh sách học kỳ và trạng thái thanh toán"
+					}
+				},
+				{
+					"name": "Step 5: Generate OTP",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"studentId\": \"523H1001\",\n  \"customerEmail\": \"khangtrongclone@gmail.com\",\n  \"customerName\": \"Admin User\"\n}"
+						},
+						"url": "http://localhost:8080/api/otp/generate",
+						"description": "Tạo mã OTP gửi về email"
+					}
+				},
+				{
+					"name": "Step 6: Confirm Payment",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": 1,\n  \"studentId\": \"523H1001\",\n  \"amount\": 4765970,\n  \"otp\": \"123456\",\n  \"semesterFeeId\": 1\n}"
+						},
+						"url": "http://localhost:8080/api/payments/confirm",
+						"description": "Xác nhận thanh toán với OTP (thay 123456 bằng OTP thật từ email)"
+					}
+				},
+				{
+					"name": "Step 7: View History",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:8080/api/payments/history/1",
+						"description": "Xem lịch sử giao dịch"
+					}
+				}
+			],
+			"description": "🔄 Test toàn bộ luồng thanh toán từ đầu đến cuối\n\nLuồng:\n1. Login → Nhận JWT token\n2. Get Customer → Xem số dư\n3. Search Student → Tìm sinh viên\n4. Get Semesters → Chọn học kỳ cần thanh toán\n5. Generate OTP → Nhận mã qua email\n6. Confirm Payment → Thanh toán với OTP\n7. View History → Xem giao dịch đã thực hiện"
+		}
+	]
+}

@@ -23,11 +23,11 @@
         <module>common</module>
         <module>auth-service</module>
         <module>user-service</module>
+        <module>api-gateway</module>
         <!-- TODO: Uncomment when services are ready -->
         <!--
         <module>fitness-service</module>
         <module>meal-service</module>
-        <module>api-gateway</module>
         -->
     </modules>
 

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - iBanking System</title>
+    
+    <!-- Bootstrap 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    
+    <!-- Font Awesome 6.4.0 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    
+    <style>
+        /* ========================================
+           CSS VARIABLES
+           ======================================== */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 15px 50px rgba(0, 0, 0, 0.15);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* ========================================
+           GLOBAL STYLES
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background circles */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        body::before {
+            width: 500px;
+            height: 500px;
+            top: -250px;
+            left: -250px;
+        }
+        
+        body::after {
+            width: 400px;
+            height: 400px;
+            bottom: -200px;
+            right: -200px;
+            animation-delay: -10s;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(50px, 50px) scale(1.1);
+            }
+            50% {
+                transform: translate(0, 100px) scale(1);
+            }
+            75% {
+                transform: translate(-50px, 50px) scale(0.9);
+            }
+        }
+        
+        /* ========================================
+           LOGIN CARD STYLES
+           ======================================== */
+        .login-container {
+            max-width: 450px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+        
+        .login-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+        
+        /* ========================================
+           CARD HEADER
+           ======================================== */
+        .card-header-custom {
+            background: var(--primary-gradient);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .logo-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .card-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.625rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .card-subtitle {
+            font-size: 1rem;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+        
+        /* ========================================
+           FORM STYLES
+           ======================================== */
+        .card-body-custom {
+            padding: 3rem 2.5rem 2.5rem 2.5rem;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.875rem;
+            font-size: 0.975rem;
+            display: block;
+            letter-spacing: 0.3px;
+        }
+        
+        .form-label i {
+            margin-right: 0.625rem;
+            color: #667eea;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control-custom {
+            width: 100%;
+            padding: 1.125rem 1.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+            background-color: #f9fafb;
+            line-height: 1.5;
+            height: 56px;
+        }
+        
+        .form-control-custom::placeholder {
+            color: #9ca3af;
+        }
+        
+        .form-control-custom:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-control-custom.is-invalid {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        /* ========================================
+           SHOW PASSWORD CHECKBOX
+           ======================================== */
+        .show-password-wrapper {
+            margin-bottom: 1.5rem;
+            margin-top: -0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .show-password-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .show-password-label {
+            font-size: 0.925rem;
+            color: #6b7280;
+            cursor: pointer;
+            user-select: none;
+            margin: 0;
+        }
+        
+        .show-password-label:hover {
+            color: #667eea;
+        }
+        
+        /* ========================================
+           VALIDATION FEEDBACK
+           ======================================== */
+        .invalid-feedback {
+            display: none;
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            padding-left: 0.25rem;
+        }
+        
+        .invalid-feedback i {
+            margin-right: 0.25rem;
+        }
+        
+        .form-control-custom.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+        
+        /* ========================================
+           ALERT STYLES
+           ======================================== */
+        .alert-custom {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            animation: shakeAlert 0.5s ease-in-out;
+        }
+        
+        @keyframes shakeAlert {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .alert-custom i {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+        }
+        
+        .alert-danger-custom {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+        }
+        
+        /* ========================================
+           SUBMIT BUTTON
+           ======================================== */
+        .btn-submit {
+            width: 100%;
+            padding: 1.125rem;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 1.0625rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+            height: 56px;
+        }
+        
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn-submit:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .btn-submit span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-submit i {
+            margin-right: 0.5rem;
+        }
+        
+        /* ========================================
+           LOADING STATE
+           ======================================== */
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+        
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 0 0.5rem;
+            }
+            
+            .card-header-custom {
+                padding: 2rem 1.5rem;
+            }
+            
+            .card-body-custom {
+                padding: 2rem 1.5rem;
+            }
+            
+            .logo-icon {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .logo-icon i {
+                font-size: 2rem;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================
+         LOGIN CONTAINER
+         ======================================== -->
+    <div class="login-container">
+        <div class="login-card">
+            
+            <!-- Card Header -->
+            <div class="card-header-custom">
+                <div class="logo-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h1 class="card-title">iBanking System</h1>
+                <p class="card-subtitle">Hệ thống thanh toán học phí trực tuyến</p>
+            </div>
+            
+            <!-- Card Body - Login Form -->
+            <div class="card-body-custom">
+                
+                <!-- Login Form -->
+                <form id="loginForm" novalidate>
+                    
+                    <!-- Username Input -->
+                    <div class="input-group-custom">
+                        <label for="username" class="form-label">
+                            <i class="fas fa-user"></i>Tên đăng nhập
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control-custom" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Nhập tên đăng nhập"
+                            autocomplete="username"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            <i class="fas fa-times-circle"></i>
+                            Vui lòng nhập tên đăng nhập
+                        </div>
+                    </div>
+                    
+                    <!-- Password Input -->
+                    <div class="input-group-custom">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i>Mật khẩu
+                        </label>
+                        <input 
+                            type="password" 
+                            class="form-control-custom" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Nhập mật khẩu"
+                            autocomplete="current-password"
+                            required
+                        />
+                        <div class="invalid-feedback">
+                            <i class="fas fa-times-circle"></i>
+                            Vui lòng nhập mật khẩu
+                        </div>
+                    </div>
+                    
+                    <!-- Show Password Checkbox -->
+                    <div class="show-password-wrapper">
+                        <input 
+                            type="checkbox" 
+                            id="showPassword" 
+                            class="show-password-checkbox"
+                        />
+                        <label for="showPassword" class="show-password-label">
+                            Hiện mật khẩu
+                        </label>
+                    </div>
+                    
+                    <!-- Error message container -->
+                    <div id="errorAlert" class="alert-custom alert-danger-custom" style="display: none;" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorMessage"></span>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <span>
+                            <i class="fas fa-sign-in-alt"></i>
+                            Đăng nhập
+                        </span>
+                    </button>
+                    
+                </form>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- ========================================
+         JAVASCRIPT
+         ======================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        "use strict";
+        
+        // ========================================
+        // API CONFIGURATION - USING API GATEWAY
+        // ========================================
+        const API_BASE_URL = 'http://localhost:8080'; // API Gateway URL
+        
+        // ========================================
+        // DOM ELEMENTS
+        // ========================================
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const showPasswordCheckbox = document.getElementById('showPassword');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorAlert = document.getElementById('errorAlert');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // ========================================
+        // FORM VALIDATION & SUBMISSION
+        // ========================================
+        loginForm.addEventListener('submit', async function(event) {
+            // Prevent default form submission
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Hide previous errors
+            hideError();
+            
+            let isValid = true;
+            
+            // Validate username
+            if (!usernameInput.value.trim()) {
+                usernameInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                usernameInput.classList.remove('is-invalid');
+            }
+            
+            // Validate password
+            if (!passwordInput.value.trim()) {
+                passwordInput.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                passwordInput.classList.remove('is-invalid');
+            }
+            
+            // If valid, call API
+            if (isValid) {
+                await handleLogin();
+            }
+        });
+        
+        // ========================================
+        // LOGIN API CALL - THROUGH API GATEWAY
+        // ========================================
+        async function handleLogin() {
+            showLoadingState();
+            
+            try {
+                console.log('🔐 Attempting login through API Gateway...');
+                
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: usernameInput.value.trim(),
+                        password: passwordInput.value.trim()
+                    })
+                });
+                
+                console.log('📡 Login response status:', response.status);
+                
+                const data = await response.json();
+                console.log('📦 Response data:', data);
+                
+                if (response.ok && data.token) {
+                    // Login successful - save JWT token
+                    console.log('✅ Login successful!');
+                    localStorage.setItem('jwtToken', data.token);
+                    localStorage.setItem('username', data.username);
+                    localStorage.setItem('userId', data.id);
+                    
+                    showToastSuccess('✅ Đăng nhập thành công! Đang chuyển hướng...', 1000);
+                    
+                    // Redirect to home page (relative path works with file://)
+                    setTimeout(() => {
+                        window.location.replace('home.html');
+                    }, 1200);
+                } else {
+                    // Login failed
+                    console.error('❌ Login failed:', data.message);
+                    showError(data.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
+                    resetButtonState();
+                }
+                
+            } catch (error) {
+                console.error('❌ Login error:', error);
+                showError('Lỗi kết nối đến server. Vui lòng thử lại.');
+                resetButtonState();
+            }
+        }
+        
+        // ========================================
+        // ERROR HANDLING
+        // ========================================
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorAlert.style.display = 'flex';
+            errorAlert.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                errorAlert.classList.remove('animate__animated', 'animate__shakeX');
+            }, 500);
+        }
+        
+        function showToastSuccess(message, duration = 2000) {
+            // Simple success toast using alert styling
+            const successDiv = document.createElement('div');
+            successDiv.className = 'alert-custom';
+            successDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 1rem 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); animation: slideInRight 0.3s ease-out;';
+            successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => successDiv.remove(), 300);
+            }, duration);
+        }
+        
+        function hideError() {
+            errorAlert.style.display = 'none';
+        }
+        
+        // Remove invalid class on input
+        usernameInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+            }
+            hideError();
+        });
+        
+        passwordInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+            }
+            hideError();
+        });
+        
+        // ========================================
+        // SHOW/HIDE PASSWORD
+        // ========================================
+        showPasswordCheckbox.addEventListener('change', function() {
+            passwordInput.type = this.checked ? 'text' : 'password';
+        });
+        
+        // ========================================
+        // LOADING STATE
+        // ========================================
+        function showLoadingState() {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span><span class="spinner"></span>Đang đăng nhập...</span>';
+        }
+        
+        function resetButtonState() {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span><i class="fas fa-sign-in-alt"></i> Đăng nhập</span>';
+        }
+        
+        // ========================================
+        // KEYBOARD SHORTCUTS
+        // ========================================
+        document.addEventListener('keydown', function(event) {
+            // Alt + P to toggle password visibility
+            if (event.altKey && event.key === 'p') {
+                event.preventDefault();
+                showPasswordCheckbox.checked = !showPasswordCheckbox.checked;
+                showPasswordCheckbox.dispatchEvent(new Event('change'));
+            }
+        });
+        
+        // ========================================
+        // AUTO-FOCUS USERNAME ON LOAD
+        // ========================================
+        window.addEventListener('load', function() {
+            usernameInput.focus();
+        });
+    </script>
+
+</body>
+</html>

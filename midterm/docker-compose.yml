@@ -1,0 +1,306 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # DATABASES
+  # ============================================
+  
+  # Auth Database
+  auth-db:
+    image: postgres:15-alpine
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sa123456
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+    networks:
+      - ibanking-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Customer Database
+  customer-db:
+    image: postgres:15-alpine
+    container_name: customer-db
+    environment:
+      POSTGRES_DB: customer_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sa123456
+    ports:
+      - "5434:5432"
+    volumes:
+      - customer_data:/var/lib/postgresql/data
+    networks:
+      - ibanking-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Student Database
+  student-db:
+    image: postgres:15-alpine
+    container_name: student-db
+    environment:
+      POSTGRES_DB: student_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sa123456
+    ports:
+      - "5435:5432"
+    volumes:
+      - student_data:/var/lib/postgresql/data
+    networks:
+      - ibanking-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Payment Database
+  payment-db:
+    image: postgres:15-alpine
+    container_name: payment-db
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sa123456
+    ports:
+      - "5436:5432"
+    volumes:
+      - payment_data:/var/lib/postgresql/data
+    networks:
+      - ibanking-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # OTP Database
+  otp-db:
+    image: postgres:15-alpine
+    container_name: otp-db
+    environment:
+      POSTGRES_DB: otp_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: sa123456
+    ports:
+      - "5437:5432"
+    volumes:
+      - otp_data:/var/lib/postgresql/data
+    networks:
+      - ibanking-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # RABBITMQ
+  # ============================================
+  
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # RabbitMQ connection
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - ibanking-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # MICROSERVICES
+  # ============================================
+
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: sa123456
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - ibanking-network
+    restart: on-failure
+
+  # Customer Service
+  customer-service:
+    build: ./customer-service
+    container_name: customer-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://customer-db:5432/customer_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: sa123456
+    depends_on:
+      customer-db:
+        condition: service_healthy
+    networks:
+      - ibanking-network
+    restart: on-failure
+
+  # Student Service
+  student-service:
+    build: ./student-service
+    container_name: student-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://student-db:5432/student_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: sa123456
+    depends_on:
+      student-db:
+        condition: service_healthy
+    networks:
+      - ibanking-network
+    restart: on-failure
+
+  # Payment Service (with OpenFeign)
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://payment-db:5432/payment_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: sa123456
+      CUSTOMER_SERVICE_URL: http://customer-service:8082
+      STUDENT_SERVICE_URL: http://student-service:8083
+      OTP_SERVICE_URL: http://otp-service:8085
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin123
+    depends_on:
+      payment-db:
+        condition: service_healthy
+      customer-service:
+        condition: service_started
+      student-service:
+        condition: service_started
+      otp-service:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - ibanking-network
+    restart: on-failure
+
+  # OTP Service
+  otp-service:
+    build: ./otp-service
+    container_name: otp-service
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://otp-db:5432/otp_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: sa123456
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: lananhoutlier@gmail.com
+      SPRING_MAIL_PASSWORD: avnszmemzhttknau
+    depends_on:
+      otp-db:
+        condition: service_healthy
+    networks:
+      - ibanking-network
+    restart: on-failure
+
+  # Notification Service (with RabbitMQ)
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin123
+      SPRING_MAIL_USERNAME: lananhoutlier@gmail.com
+      SPRING_MAIL_PASSWORD: avnszmemzhttknau
+      NOTIFICATION_EMAIL_FROM: "iBanking Support <lananhoutlier@gmail.com>"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - ibanking-network
+    restart: on-failure
+
+  # API Gateway (Entry point for all requests)
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8081
+      CUSTOMER_SERVICE_URL: http://customer-service:8082
+      STUDENT_SERVICE_URL: http://student-service:8083
+      PAYMENT_SERVICE_URL: http://payment-service:8084
+      OTP_SERVICE_URL: http://otp-service:8085
+      NOTIFICATION_SERVICE_URL: http://notification-service:8086
+    depends_on:
+      auth-service:
+        condition: service_started
+      customer-service:
+        condition: service_started
+      student-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      otp-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    networks:
+      - ibanking-network
+    restart: on-failure
+
+# ============================================
+# VOLUMES
+# ============================================
+volumes:
+  auth_data:
+  customer_data:
+  student_data:
+  payment_data:
+  otp_data:
+  rabbitmq_data:
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  ibanking-network:
+    driver: bridge

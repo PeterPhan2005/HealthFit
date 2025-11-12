@@ -131,20 +131,4 @@ public class AuthService {
 
         return AuthResponse.of(token, user, age);
     }
-
-    /**
-     * Validate token and return user
-     */
-    @Transactional(readOnly = true)
-    public User validateToken(String token) {
-        String email = jwtService.extractUsername(token);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UnauthorizedException("Invalid token"));
-
-        if (!jwtService.isTokenValid(token, user)) {
-            throw new UnauthorizedException("Invalid or expired token");
-        }
-
-        return user;
-    }
 }

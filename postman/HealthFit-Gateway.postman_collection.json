@@ -1,0 +1,578 @@
+{
+	"info": {
+		"_postman_id": "healthfit-gateway-api",
+		"name": "HealthFit API (via Gateway)",
+		"description": "Complete API collection for HealthFit microservices accessed through API Gateway on port 8080. Includes Auth, User Profile, Health Metrics, and Goals Management.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set('jwt_token', jsonData.data.token);",
+									"        console.log('JWT token saved:', jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Test User\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/register",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user. JWT cookie will be set automatically."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set('jwt_token', jsonData.data.token);",
+									"        console.log('JWT token saved:', jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/login",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with credentials. JWT cookie will be set automatically for subsequent requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Auth User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/me",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get currently authenticated user from auth-service. Cookie automatically forwarded by gateway."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/logout",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout user and clear JWT cookie. Token will be blacklisted."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints routed through API Gateway to Auth Service (port 8081)"
+		},
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/me",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Get current user profile from user-service. Cookie automatically forwarded."
+					},
+					"response": []
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fullName\": \"John Doe Updated\",\n  \"gender\": \"MALE\",\n  \"dateOfBirth\": \"1995-05-15\",\n  \"currentWeight\": 75.5,\n  \"currentHeight\": 175.0,\n  \"activityLevel\": \"MODERATELY_ACTIVE\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/me",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Update current user profile. BMI auto-calculated."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "User profile endpoints routed through API Gateway to User Service (port 8082)"
+		},
+		{
+			"name": "Health Metrics",
+			"item": [
+				{
+					"name": "Log Health Metric",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"recordedDate\": \"2024-11-12\",\n  \"weight\": 75.5,\n  \"height\": 175.0,\n  \"bodyFatPercentage\": 18.5,\n  \"muscleMass\": 32.5,\n  \"waistCircumference\": 82.0,\n  \"chestCircumference\": 95.0,\n  \"hipCircumference\": 92.0,\n  \"notes\": \"After morning workout\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/metrics",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics"
+							]
+						},
+						"description": "Log a new health metric. BMI auto-calculated."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Metrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/metrics",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Latest Metric",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/metrics/latest",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics",
+								"latest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Metrics By Date Range",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/metrics?startDate=2024-01-01&endDate=2024-12-31",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"metrics"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Goals Management",
+			"item": [
+				{
+					"name": "Create Goal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"goalType\": \"WEIGHT_LOSS\",\n  \"title\": \"Lose 10 kg by summer\",\n  \"description\": \"Target weight of 70kg through balanced diet and exercise\",\n  \"targetValue\": 70.0,\n  \"currentValue\": 80.0,\n  \"unit\": \"kg\",\n  \"startDate\": \"2024-11-12\",\n  \"targetDate\": \"2025-06-01\"\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/goals",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals"
+							]
+						},
+						"description": "Create a fitness goal. Status and progress auto-calculated."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Goals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/goals",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Goals By Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/goals?status=IN_PROGRESS",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "IN_PROGRESS"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Goal Progress",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentValue\": 72.0\n}"
+						},
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/goals/1/progress",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1",
+								"progress"
+							]
+						},
+						"description": "Update goal progress. Status auto-updated."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Goal",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/goals/1/cancel",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Goal",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/users/1/goals/1",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1",
+								"goals",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health Checks",
+			"item": [
+				{
+					"name": "Gateway Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/gateway/health",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"gateway",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gateway Routes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/actuator/gateway/routes",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"actuator",
+								"gateway",
+								"routes"
+							]
+						},
+						"description": "View all configured routes in API Gateway"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth Service Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{gateway_url}}/api/auth/health",
+							"host": [
+								"{{gateway_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "gateway_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
